@@ -1,13 +1,14 @@
 package verifyemail;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import javax.sql.DataSource;
 
 import java.util.logging.Logger;
 
-import static com.mysql.cj.conf.PropertyKey.logger;
 
-public class SQLConnectionPoolFactory{
+public class SQLConnectionPoolFactory {
     private static final Logger logger = Logger.getLogger(SQLConnectionPoolFactory.class.getName());
     private static final String DB_USER = System.getenv("DB_USER");
     private static final String DB_PASS = System.getenv("DB_PASS");

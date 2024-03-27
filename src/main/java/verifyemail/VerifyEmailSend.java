@@ -12,6 +12,7 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import kong.unirest.Unirest;
 
 import java.sql.SQLException;
@@ -36,6 +37,7 @@ public class VerifyEmailSend implements CloudEventsFunction {
         String decodedData = new String(Base64.getDecoder().decode(encodedData));
         String[] usernameToken = decodedData.split(":");
         String verificationLink = "http://pranavprakash.me:8080/v1/user/verify?username=" + usernameToken[0] + "&token=" + usernameToken[1];
+        logger.info("Verification link: " + verificationLink);
         Unirest.post("https://api.mailgun.net/v3/" + "pranavprakash.me" + "/messages")
                 .basicAuth("api", API_KEY)
                 .queryString("from", "Webapp <no-reply@pranavprakash.me>")
@@ -44,19 +46,19 @@ public class VerifyEmailSend implements CloudEventsFunction {
                 .queryString("html", buildHtmlContent(verificationLink))
                 .asJson();
         try {
-          DataSource pool = SQLConnectionPoolFactory.createConnectionPool();
-          try (Connection conn = pool.getConnection()) {
-            String stmt = "UPDATE webapp.user SET email_sent_time = CURRENT_TIMESTAMP() WHERE ID= ?";
-            try (PreparedStatement voteStmt = conn.prepareStatement(stmt)) {
-              voteStmt.setString(1, usernameToken[1]);
-              voteStmt.execute();
-              logger.info("Updated for user: " + usernameToken[0]);
+            DataSource pool = SQLConnectionPoolFactory.createConnectionPool();
+            try (Connection conn = pool.getConnection()) {
+                String query = "UPDATE webapp.user SET email_sent_time = CURRENT_TIMESTAMP() WHERE ID= ?";
+                try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                    stmt.setString(1, usernameToken[1]);
+                    stmt.execute();
+                    logger.info("Updated for user: " + usernameToken[0]);
+                }
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Error while attempting to update", ex);
             }
-          } catch (SQLException ex) {
-            logger.log(Level.SEVERE, "Error while attempting to update", ex);
-          }
-        } catch (Exception e){
-          logger.log(Level.SEVERE, "Error while attempting to update", e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while attempting to update", e);
         }
         // Log the message
         logger.info("Pub/Sub message: " + decodedData);
