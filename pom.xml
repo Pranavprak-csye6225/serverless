@@ -46,6 +46,21 @@
             <artifactId>cloudevents-api</artifactId>
             <version>2.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>mysql-socket-factory-connector-j-8</artifactId>
+            <version>1.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java -->
         <!-- https://mvnrepository.com/artifact/com.konghq/unirest-java -->
         <dependency>
