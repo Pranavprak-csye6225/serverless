@@ -36,7 +36,7 @@ public class VerifyEmailSend implements CloudEventsFunction {
         String encodedData = message.getData();
         String decodedData = new String(Base64.getDecoder().decode(encodedData));
         String[] usernameToken = decodedData.split(":");
-        String verificationLink = "http://pranavprakash.me:8080/v1/user/verify?username=" + usernameToken[0] + "&token=" + usernameToken[1];
+        String verificationLink = "https://pranavprakash.me/v1/user/verify?username=" + usernameToken[0] + "&token=" + usernameToken[1];
         logger.info("Verification link: " + verificationLink);
         Unirest.post("https://api.mailgun.net/v3/" + "pranavprakash.me" + "/messages")
                 .basicAuth("api", API_KEY)
@@ -48,7 +48,7 @@ public class VerifyEmailSend implements CloudEventsFunction {
         try {
             DataSource pool = SQLConnectionPoolFactory.createConnectionPool();
             try (Connection conn = pool.getConnection()) {
-                String query = "UPDATE webapp.user SET email_sent_time = CURRENT_TIMESTAMP() WHERE ID= ?";
+                String query = "UPDATE webapp.user SET expiry_time = DATE_ADD(NOW(), INTERVAL 2 MINUTE) WHERE USERNAME= ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, usernameToken[1]);
                     stmt.execute();
