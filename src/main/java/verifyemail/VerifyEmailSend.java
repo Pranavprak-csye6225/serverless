@@ -50,7 +50,7 @@ public class VerifyEmailSend implements CloudEventsFunction {
             try (Connection conn = pool.getConnection()) {
                 String query = "UPDATE webapp.user SET expiry_time = DATE_ADD(NOW(), INTERVAL 2 MINUTE) WHERE USERNAME= ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
-                    stmt.setString(1, usernameToken[1]);
+                    stmt.setString(1, usernameToken[0]);
                     stmt.execute();
                     logger.info("Updated for user: " + usernameToken[0]);
                 }
